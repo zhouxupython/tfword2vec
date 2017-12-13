@@ -108,7 +108,7 @@ class word2vec():
             self.similarity = tf.matmul(test_embed, self.normed_embedding, transpose_b=True)
 
             # 变量初始化
-            self.init = tf.global_variables_initializer()
+            self.init = tf.initialize_all_variables() #tf.global_variables_initializer()
 
             self.merged_summary_op = tf.merge_all_summaries()
 
@@ -274,7 +274,7 @@ if __name__=='__main__':
                    win_len=2,
                    learning_rate=1,
                    num_sampled=100,         # 负采样个数
-                   logdir='/tmp/280')       # tensorboard记录地址
+                   logdir='./tensorboard')       # tensorboard记录地址
     test_word = ['萧炎','灵魂','火焰','长老','尊者','皱眉']
     test_id = [word_list.index(x) for x in test_word]
     num_steps = 100000
@@ -282,4 +282,17 @@ if __name__=='__main__':
         sent = sentence_list[i%len(sentence_list)]
         w2v.train_by_sentence([sent])
 
+    w2v.summary_writer.flush()
+    w2v.summary_writer.close()
 
+    print('train over!')
+    test_words,near_words,sim_mean,sim_var = w2v.cal_similarity(test_id, 3)
+    print(test_words)
+    print('\n')
+    print(near_words)
+    print('\n')
+    print(sim_mean)
+    print('\n')
+    print(sim_var)
+
+    w2v.sess.close()
